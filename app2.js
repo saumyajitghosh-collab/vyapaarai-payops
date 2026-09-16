@@ -190,7 +190,7 @@ function answer(q){
   }
   if(/match|reconcil|exception|mismatch|unknown|duplicate/.test(s)){
     const o=S.exceptions.filter(e=>e.open); const by={}; o.forEach(e=>by[e.type]=(by[e.type]||0)+1);
-    return o.length ? `${o.length} open exception${o.length>1?"s":""}:<ul>${Object.entries(by).map(([k,v])=>`<li>${v} × ${esc(k)}</li>`).join("")}</ul>Every other payment was matched by a rule shown on its row.${S.advances||S.unalocatedd?` Held outside bills: ${inr(S.advances)} as customer advances, ${inr(S.unallocated)} unallocated.`:""}` : "Everything is matched right now.";
+    return o.length ? `${o.length} open exception${o.length>1?"s":""}:<ul>${Object.entries(by).map(([k,v])=>`<li>${v} × ${esc(k)}</li>`).join("")}</ul>Every other payment was matched by a rule shown on its row.${S.advances||S.unallocated?` Held outside bills: ${inr(S.advances)} as customer advances, ${inr(S.unallocated)} unallocated.`:""}` : "Everything is matched right now.";
   }
   if(/opportunit|money|surplus|recover|save/.test(s)){
     const rows=oppRows(); const tot=rows.reduce((a,r)=>a+r.value,0);
