@@ -6,7 +6,7 @@ const CONFIG = {
   // Formspree (https://formspree.io) endpoint e.g. "https://formspree.io/f/abcdwxyz". Leave "" to fall back to email.
   FORM_ENDPOINT: "",
   // Used if FORM_ENDPOINT is empty: opens the visitor's email app with the details filled in.
-  CONTACT_EMAIL: "",
+  CONTACT_EMAIL: "saumyajit.ghosh@gmail.com",
   // Illustrative fee rates (fraction). Not real provider pricing.
   FEES: { "PhonePe":0, "Google Pay":0, "Paytm":0, "BHIM":0, "Razorpay":0.02, "Card POS":0.018, "NEFT":0 },
   // Confirmed NPCI MDR framework, effective 15 October 2026: 0.4% on P2M UPI above ₹2,000, capped at ₹300 for ₹75,000+. P2P and sub-₹2,000 payments stay free.
@@ -24,10 +24,39 @@ const CONFIG = {
     PLANS: {
       reconcile:   { label:"Reconcile", amount:999, note:"PayOps Reconcile 1mo",
                      desc:"One bank account, up to 3 payment apps, automatic matching to bills, daily WhatsApp summary.",
-                     qr:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAAFoAQAAAABSnlx4AAAC00lEQVR4nO2bwW7kMAxDySL//8vcAyXZcylQTDqVNp6iRZC+A6ERZFqyKfzg8/UT+NCH/nP6AugnERBFARQoAKBfJNFI91T6AuDQAiJExxiOuiiCKqKP7qn0BTjWiLSOCGd+w9kdRB/dU+lrPWYSO7cpASDEDyl5Br3Fm6Kc3hV7xZ9PKHkGfQERXShy2dUbleCLaKR7Kg1l+uqbn0T76J5KX1jhZFVwrNVSXEQj3VNpWxGviQ54em4HOaJPh72P7qk0JEiCttIhSZBLjV7e9tE9lb6A2uGE836xJIyvgb+u5Dm0ACjqNCHZocgWRQDJ+Ap66Z5LexsPSkLsNbOmxw5IH1Lyv9NwiBGBjkKeNVxVvv2uj+6pNAUiO1RpSnIbL1aVAY4/uYlWxDaiSodYkI2huBx4K91j6Qy3CEaKq0x3fs56eQt9IfY5DjPDG3KtkdUv/GUlz6CxLImXxGxe1UNue856eRctgf4Vw4FXF0Uxa3AN76V7LM0McHZLwoLXYy6YzXTPpNewEtXyToMouKLzI0oeQFN7Im8unNhasTz+5F6akEhPhrmOSMSwmFnR2+keR9c8jeX/lg1k7i1z39lH92Da+xwf9IlVUyRArs6Kd0O9dI+kI79VVUR1+iTHa1rjnj66p9KQqgFY8+GY9+TzIvvonkp7Pw9tpkRpWqKZohxlnv7g+/SVJjBmOszjJ26lROMkv5A+uqfS7o5UBxY5IobqVfVSTj15n2a6Pm2zBv/Dqe6mbFB9dE+l83yVMslrpqZ6l+DJ7/dpan+MyQNyC1Qnf3j6VffQ2/0GpBUR3KXKt1V0GumeSu/3G157V/GoHGceP3gHvd9vANJ++4xVtq7cQTn9qvtpN61UN3ZqzYwy01X3SLou7cQdB0p57sTnIprqnkfnGavt9PFqm7gn685hM90D6QtlUKqLkoc1GXdMhFNP7qI3//3HSg596Pvpf3bc1C+Ae/mqAAAAAElFTkSuQmCC" },
+                     qr:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAAFoAQAAAABSnlx4AAAC00lEQVR4nO2bwW7kMAxDyS"
+                     + "L//8vcAyXZcylQTDqVNp6iRZC+A6ERZFqyKfzg8/UT+NCH/nP6AugnERBFARQoAKBfJNFI"
+                     + "91T6AuDQAiJExxiOuiiCKqKP7qn0BTjWiLSOCGd+w9kdRB/dU+lrPWYSO7cpASDEDyl5Br"
+                     + "3Fm6Kc3hV7xZ9PKHkGfQERXShy2dUbleCLaKR7Kg1l+uqbn0T76J5KX1jhZFVwrNVSXEQj"
+                     + "3VNpWxGviQ54em4HOaJPh72P7qk0JEiCttIhSZBLjV7e9tE9lb6A2uGE836xJIyvgb+u5D"
+                     + "m0ACjqNCHZocgWRQDJ+Ap66Z5LexsPSkLsNbOmxw5IH1Lyv9NwiBGBjkKeNVxVvv2uj+6p"
+                     + "NAUiO1RpSnIbL1aVAY4/uYlWxDaiSodYkI2huBx4K91j6Qy3CEaKq0x3fs56eQt9IfY5Dj"
+                     + "PDG3KtkdUv/GUlz6CxLImXxGxe1UNue856eRctgf4Vw4FXF0Uxa3AN76V7LM0McHZLwoLX"
+                     + "Yy6YzXTPpNewEtXyToMouKLzI0oeQFN7Im8unNhasTz+5F6akEhPhrmOSMSwmFnR2+keR9"
+                     + "c8jeX/lg1k7i1z39lH92Da+xwf9IlVUyRArs6Kd0O9dI+kI79VVUR1+iTHa1rjnj66p9KQ"
+                     + "qgFY8+GY9+TzIvvonkp7Pw9tpkRpWqKZohxlnv7g+/SVJjBmOszjJ26lROMkv5A+uqfS7o"
+                     + "5UBxY5IobqVfVSTj15n2a6Pm2zBv/Dqe6mbFB9dE+l83yVMslrpqZ6l+DJ7/dpan+MyQNy"
+                     + "C1Qnf3j6VffQ2/0GpBUR3KXKt1V0GumeSu/3G157V/GoHGceP3gHvd9vANJ++4xVtq7cQT"
+                     + "n9qvtpN61UN3ZqzYwy01X3SLou7cQdB0p57sTnIprqnkfnGavt9PFqm7gn685hM90D6Qtl"
+                     + "UKqLkoc1GXdMhFNP7qI3//3HSg596Pvpf3bc1C+Ae/mqAAAAAElFTkSuQmCC" },
       reconcollect: { label:"Reconcile + Collect", amount:2499, note:"PayOps Recon+Collect 1mo",
                      desc:"Everything in Reconcile, plus reminders in Kannada/Hindi/Tamil/English, settlement and fee tracking, and Ask PayOps on WhatsApp.",
-                     qr:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAAFoAQAAAABSnlx4AAAC00lEQVR4nO1bwW7dMAwjh/z/L3MHkXK2w4YC7ip3bl/R1OGBUAWakmwKH/j68RHwRV/0l6MfgPUkUATqRwDAWtJCzOF9KvoBUMEFVU8QBdazoF7nJN6noh8AYMc8UYZACaAorTdzeH8LdPZOloKQBEV+AZNvi37WowhrtRJi4R3tSbxPRT/AymuIEAEKJd2gt059PpP/Aw0l2PrDd6BzeJ+Kfl7ZDUW6uVbeAR/E+1Q0hZhtW8BISL17ybom8T4VbT8oiiJFWL1T6NS/g7h+cBtacLjLc0slKg4zRULWlFG8j0Q/QOr4pSZVYKL8Sup53np+D9q5XDod6baGC6DXdfV7AxoqrVB+e0Favltlx68f3IB2fbm2RoBRFdBtK1pZBvE+Gh37IYByOpOV9FVu2iwO430qunKYIonS7ip6aPudJJ/G+0B0CbU/lduCH4XIe17O4X0qmsKqaKzWywyihw+V5XN4n4r2flkh945JD9cs51TGPIN4n4pu+1d/WExcT7aU+O3Vkx1oZkgpucok2aJOyOX9ze8NaAuI0rLKJNP9lDhzA+fwPhWdvdLe22U8O8KA24cA7365BV2FDd0o9Ky4XHjb8dKUWbyPRUusdlV5FHnC00Me2qNM430s2spNZDjcDpDVEo/iDON9INrGO52q1+7I9uAePdx4b0Ink11SuosixrD06bZhvE9EszuxNeNJZFeu2yne+c5GdA5oCqpTbLUKd8CVU23TeJ+HftBp3TmeZngmxgC8Pof3qWh0qwTpzSqfX2C4/dgdaK6opi2Y45pW9pSen83k/0C/7je4nqxpWslKDian0J/D+1T0635Dzg+qeynsvvj1g5vQv99vyFlBekrch++vH9yO7uskfWdnlfd3Pr8fnaPHRB2D4LsMuvX8PnQPzIglJjmxqVx7uPfTNqAftEFJFvflnRoWV/1z+1V70NTfMf+GyUVf9H70TyfDvWfQJTflAAAAAElFTkSuQmCC" }
+                     qr:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAAFoAQAAAABSnlx4AAAC00lEQVR4nO1bwW7dMAwjh/"
+                     + "z/L3MHkXK2w4YC7ip3bl/R1OGBUAWakmwKH/j68RHwRV/0l6MfgPUkUATqRwDAWtJCzOF9"
+                     + "KvoBUMEFVU8QBdazoF7nJN6noh8AYMc8UYZACaAorTdzeH8LdPZOloKQBEV+AZNvi37Wow"
+                     + "hrtRJi4R3tSbxPRT/AymuIEAEKJd2gt059PpP/Aw0l2PrDd6BzeJ+Kfl7ZDUW6uVbeAR/E"
+                     + "+1Q0hZhtW8BISL17ybom8T4VbT8oiiJFWL1T6NS/g7h+cBtacLjLc0slKg4zRULWlFG8j0"
+                     + "Q/QOr4pSZVYKL8Sup53np+D9q5XDod6baGC6DXdfV7AxoqrVB+e0Favltlx68f3IB2fbm2"
+                     + "RoBRFdBtK1p"
+                     + "ZBvE+Gh37IYByOpOV9FVu2iwO430qunKYIonS7ip6aPudJJ/G+0B0CbU/ld"
+                     + "uCH4XIe17O4X0qmsKqaKzWywyihw+V5XN4n4r2flkh945JD9cs51TGPIN4n4pu+1d/WExc"
+                     + "T7aU+O3Vkx1oZkgpucok2aJOyOX9ze8NaAuI0rLKJNP9lDhzA+fwPhWdvdLe22U8O8KA24"
+                     + "cA7365BV2FDd0o9Ky4XHjb8dKUWbyPRUusdlV5FHnC00Me2qNM430s2spNZDjcDpDVEo/i"
+                     + "DON9INrGO52q1+7I9uAePdx4b0Ink11SuosixrD06bZhvE9EszuxNeNJZFeu2yne+c5GdA"
+                     + "5oCqpTbLUKd8CVU23TeJ+HftBp3TmeZngmxgC8Pof3qWh0qwTpzSqfX2C4/dgdaK6opi2Y"
+                     + "45pW9pSen83k/0C/7je4nqxpWslKDian0J/D+1T0635Dzg+qeynsvvj1g5vQv99vyFlBek"
+                     + "rch++vH9yO7uskfWdnlfd3Pr8fnaPHRB2D4LsMuvX8PnQPzIglJjmxqVx7uPfTNqAftEFJ"
+                     + "FvflnRoWV/1z+1V70NTfMf+GyUVf9H70TyfDvWfQJTflAAAAAElFTkSuQmCC" }
     }
   },
   TICK_MS: 1500
@@ -57,7 +86,7 @@ let seed = 20260916;
 function rand(){ seed|=0; seed=seed+0x6D2B79F5|0; let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }
 const pick = a => a[Math.floor(rand()*a.length)];
 const inr = n => "₹" + Math.round(n).toLocaleString("en-IN");
-const esc = s => String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const esc = s => String(s).replace(/[&<>"']/g, c => '&' + {38:"amp;",60:"lt;",62:"gt;",34:"quot;",39:"#39;"}[c.charCodeAt(0)]);
 const $ = id => document.getElementById(id);
 
 // ---------- synthetic world ----------
