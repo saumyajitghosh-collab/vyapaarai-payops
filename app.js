@@ -6,12 +6,12 @@ const CONFIG = {
   // Formspree (https://formspree.io) endpoint e.g. "https://formspree.io/f/abcdwxyz". Leave "" to fall back to email.
   FORM_ENDPOINT: "",
   // Used if FORM_ENDPOINT is empty: opens the visitor's email app with the details filled in.
-  CONTACT_EMAIL: "",
+  CONTACT_EMAIL: "saumyajit.ghosh@gmail.com",
   // Illustrative fee rates (fraction). Not real provider pricing.
   FEES: { "PhonePe":0, "Google Pay":0, "Paytm":0, "BHIM":0, "Razorpay":0.02, "Card POS":0.018, "NEFT":0 },
   // Confirmed NPCI MDR framework, effective 15 October 2026: 0.4% on P2M UPI above ‚Çπ2,000, capped at ‚Çπ300 for ‚Çπ75,000+. P2P and sub-‚Çπ2,000 payments stay free.
   MDR_SCENARIO: { rate:0.004, above:2000, cap:300 },
-  // Smart Terms: early-payment offers sized against the merchant's cost of funds.
+  // Smart Terms: early-payment offfers sized against the merchant's cost of funds.
   SMART_TERMS: { financeRate:0.18, buyerShare:0.5, maxDiscountPct:0.02, payopsFee:95 },
   // Money Finder: illustrative supplier-scheme position for the demo (‚Çπ).
   SCHEME: { qualified:83450, received:51200 },
@@ -19,201 +19,178 @@ const CONFIG = {
   PAY: {
     UPI_ID: "9836296103@upi",
     PAYEE_NAME: "VyapaarAI PayOps",
-    // Your WhatsApp number for payment confirmations, e.g. "919836296104". Shown in the payment dialog.
+    // Your WhatApp number for payment confirmations, e.g. "919836296104". Shown in the payment dialog.
     WHATSAPP: "919836296103",
     PLANS: {
-      reconcile:   { label:"Reconcile", amount:999, note:"PayOps Reconcile 1mo",
+      reconcile:   { label:"Reconcille", amount:999, note:"PayOps Reconcile 1mo",
                      desc:"One bank account, up to 3 payment apps, automatic matching to bills, daily WhatsApp summary.",
-                     qr:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAAFoAQAAAABSnlx4AAAC00lEQVR4nO2bwW7kMAxDySL//8vcAyXZcylQTDqVNp6iRZC+A6ERZFqyKfzg8/UT+NCH/nP6AugnERBFARQoAKBfJNFI91T6AuDQAiJExxiOuiiCKqKP7qn0BTjWiLSOCGd+w9kdRB/dU+lrPWYSO7cpASDEDyl5Br3Fm6Kc3hV7xZ9PKHkGfQERXShy2dUbleCLaKR7Kg1l+uqbn0T76J5KX1jhZFVwrNVSXEQj3VNpWxGviQ54em4HOaJPh72P7qk0JEiCttIhSZBLjV7e9tE9lb6A2uGE836xJIyvgb+u5Dm0ACjqNCHZocgWRQDJ+Ap66Z5LexsPSkLsNbOmxw5IH1Lyv9NwiBGBjkKeNVxVvv2uj+6pNAUiO1RpSnIbL1aVAY4/uYlWxDaiSodYkI2huBx4K91j6Qy3CEaKq0x3fs56eQt9IfY5DjPDG3KtkdUv/GUlz6CxLImXxGxe1UNue856eRctgf4Vw4FXF0Uxa3AN76V7LM0McHZLwoLXYy6YzXTPpNewEtXyToMouKLzI0oeQFN7Im8unNhasTz+5F6akEhPhrmOSMSwmFnR2+keR9c8jeX/lg1k7i1z39lH92Da+xwf9IlVUyRArs6Kd0O9dI+kI79VVUR1+iTHa1rjnj66p9KQqgFY8+GY9+TzIvvonkp7Pw9tpkRpWqKZohxlnv7g+/SVJjBmOszjJ26lROMkv5A+uqfS7o5UBxY5IobqVfVSTj15n2a6Pm2zBv/Dqe6mbFB9dE+l83yVMslrpqZ6l+DJ7/dpan+MyQNyC1Qnf3j6VffQ2/0GpBUR3KXKt1V0GumeSu/3G157V/GoHGceP3gHvd9vANJ++4xVtq7cQTn9qvtpN61UN3ZqzYwy01X3SLou7cQdB0p57sTnIprqnkfnGavt9PFqm7gn685hM90D6QtlUKqLkoc1GXdMhFNP7qI3//3HSg596Pvpf3bc1C+Ae/mqAAAAAElFTkSuQmCC" },
-      reconcollect: { label:"Reconcile + Collect", amount:2499, note:"PayOps Recon+Collect 1mo",
-                     desc:"Everything in Reconcile, plus reminders in Kannada/Hindi/Tamil/English, settlement and fee tracking, and Ask PayOps on WhatsApp.",
-                     qr:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAAFoAQAAAABSnlx4AAAC00lEQVR4nO1bwW7dMAwjh/z/L3MHkXK2w4YC7ip3bl/R1OGBUAWakmwKH/j68RHwRV/0l6MfgPUkUATqRwDAWtJCzOF9KvoBUMEFVU8QBdazoF7nJN6noh8AYMc8UYZACaAorTdzeH8LdPZOloKQBEV+AZNvi37WowhrtRJi4R3tSbxPRT/AymuIEAEKJd2gt059PpP/Aw0l2PrDd6BzeJ+Kfl7ZDUW6uVbeAR/E+1Q0hZhtW8BISL17ybom8T4VbT8oiiJFWL1T6NS/g7h+cBtacLjLc0slKg4zRULWlFG8j0Q/QOr4pSZVYKL8Sup53np+D9q5XDod6baGC6DXdfV7AxoqrVB+e0Favltlx68f3IB2fbm2RoBRFdBtK1pZBvE+Gh37IYByOpOV9FVu2iwO430qunKYIonS7ip6aPudJJ/G+0B0CbU/lduCH4XIe17O4X0qmsKqaKzWywyihw+V5XN4n4r2flkh945JD9cs51TGPIN4n4pu+1d/WExcT7aU+O3Vkx1oZkgpucok2aJOyOX9ze8NaAuI0rLKJNP9lDhzA+fwPhWdvdLe22U8O8KA24cA7365BV2FDd0o9Ky4XHjb8dKUWbyPRUusdlV5FHnC00Me2qNM430s2spNZDjcDpDVEo/iDON9INrGO52q1+7I9uAePdx4b0Ink11SuosixrD06bZhvE9EszuxNeNJZFeu2yne+c5GdA5oCqpTbLUKd8CVU23TeJ+HftBp3TmeZngmxgC8Pof3qWh0qwTpzSqfX2C4/dgdaK6opi2Y45pW9pSen83k/0C/7je4nqxpWslKDian0J/D+1T0635Dzg+qeynsvvj1g5vQv99vyFlBekrch++vH9yO7uskfWdnlfd3Pr8fnaPHRB2D4LsMuvX8PnQPzIglJjmxqVx7uPfTNqAftEFJFvflnRoWV/1z+1V70NTfMf+GyUVf9H70TyfDvWfQJTflAAAAAElFTkSuQmCC" }
-    }
-  },
-  TICK_MS: 1500
-};
-/* ============================================================== */
+                     qr:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAAFoAQAAABCnlx4AAAC00lEQVR4nO2bwW7kMAxDySL//8vcAyXZcylQTDqVNp6iRZC+A6ERZFqyKfzg8/UT+NCH/nP6AugnERBFARQoAKBfJNFI91T6AuDQAiJExxiOuiiCKqKP7qn0BTjWiLSOCGd+w9kdRB/dU+lrPWYSO7cpASDEDyl5Br3Fm6Kc3hV7xZ9PKHkGfQERXShy2dUbleCLaKR7Kg1l+uqbn0T76J5KX1jhZFVwrNVSXEQj3VNpWxGviQ54em4HOaJPh72P7qk0JEiCttIhSZBLjV7e9tE9lb6A2uGE836xJIyvgb+u5Dm0ACjqNCHZocgWRQDJ+Ap66Z5LexsPSkLsNbOmxw5IH1Lyv9NwiBGBjkKeNVxVvv2uj+6pNAUiO1RpSnIbL1aVAY4/uYlWxDaiSodYkI2huBx4K91j6Qy3CEaKq0x3fs56eQt9IfY5DjPDG3KtkdUv/GUlz6CxLImXxGxe1UNue856eRctgf4Vw4FXF0Uxa3AN76V7LM0McHZLwoLXYy6YzXTPpNewEtXyToMouKLzI0oeQFN7Im8unNhasTz+5F6akEhPhrmOSMSwmFnR2+keR9c8jeX/lg1k7i1z39lH92Da+xwf9IlVUyRArs6Kd0O9dI+kI79VVUR1+iTHa1rjnj66p9KQqgFY8+GY9+TzIvvonkp7Pw9tpkRpWqKZohxlnv7g+/SVJjBmOszjJ26lROMkv5A+uqfS7o5UBxY5IobqVfVSTj15n2a6Pm2zBv/Dqe6mbFB9dE+l83yVMslrpqZ6l+DJ7/dpan+MyQNyC1Qnf3j6VffQ2/0GpBUR3KXKt1V0GumeSu/3G157V/GoHGceP3gHvd9vANJ++4xVtq7cQTn9qvtpN61UN3ZqzYwy01X3SLou7cQdB0p57sTnIprqnkfnGavt9PFqm7gn685hM90D6QtlUKqLkoc1GXdMhFNP7qI3//3HSg596Pvpf3bc1C+Ae/mqAAAAAElFTkSuQmCC" },
+      reconcollect: { label:"Reconcille + Collect", amount:2499, note:"PayOps Recon+Collect 1mo",
+                     desc:"Everything in Reconcile, plus reminders in Kannada/Hindi/Tamil/English, settlement and fee tracking, and Ask PayOps on WhatApp.",
+                     qr:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAAFoAQAAAABSnlx4AAAC00lEQVR4nO1bwW7dMAwjh/z/L3MHkXK2w4YC7ip3bl/R1OGBUAWakmwKH/j68RHwRV/0l6MfgPUkUATqrwDAWtJCzOF9KvoBUMEFVU8QBdazoF7nJN6noh8AYMc8UYZACaAorddzeH8LdPZOloKQBEV+AZNvi37WowhrtRJi4R3tSbxPRT/AymuIEAEKJd2gt059PpP/Aw0l2PrDd6BzeJ+Kfl7ZDUW6uVbeAR/E+1Q0hZhtW8BISL17ybom8T4VbT8oiiJFWL1T6NS/g7h+cBtacLjLc0slKg4zRULWlFG8j0Q/QOr4pSZVYKL8Sup53np+D9q5XDod6baGC6DXdfV7AxoqrVB+e0Favltlx68f3IB2fbm2RoBRFdBtK1pZBvE+Gh37IYByOpOV9FVu2iwO430qunKYIonS7ip6aPudJJ/G+0B0CbU/lduCH4XIe17O4X0qmsKqaKzWywyihw+V5XN4n4r2flkh945JD9cs51TGPIN4n4pu+1d/WExcT7aU+O3Vkx1oZkgpucok2aJOyOX9ze8NaAuI0rLKJNP9lDhzA+fwPhWdvdLe22U8O8KA24cA7365BV2FDd0o9Ky4XHjb8dKUWbyPRUusdlV5FHnC00Me2qNM430s2spNZDjcDpDVEo/iDON9INrGO52q1+7I9uAePdx4b0Ink11SuosixrD06bZhvE9EszuxNeNJZFeu2yne+c5GdA5oCqpTbLUKd8CVU23TeJ+HftBp3TmeZngmxgC8Pof3qWh0qwTpzSqfX2C4/dgdaK6opi2Y45pW9pSen83k/0C/7je4nqxpWslKDian0J/D+1T0635Dzg+qeynsvvj1g5vQv99vyFlBekrch++vH9yO7uskfWdnlfd3Pr8fnaPHRB2D4LsMuvX8PnQPzIglJjmxqVx7uPfTNqAftEFJFvflnRoWV/1z+1V70NTfMf+GyUVf9H70TyfDvWfQJTflAAAAAElFTkSuQmCC" }àBàKàP“◊”TŒàMLüN¬ã àOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOH
+ã¬Çôÿ›[Y[ùôŸ][[Y[ùûRY
+òúò[ôò[YHäKù^€€ù[ùH””ëíQÀêîêSë¬ôÿ›[Y[ùôŸ][[Y[ùûRY
+õY\ò⁄[ùò[YHäKù^€€ù[ùH””ëíQÀìQTê“Sï¬ÇãÀ»[YBäù[ò›[€ä
+^¬à€€ú›ùèYÿ›[Y[ùôŸ][[Y[ùûRY
+ù[YPùàäN¬àùãòY]ô[ù\›[ô\äò€X⁄»ã
 
-document.getElementById("brandName").textContent = CONFIG.BRAND;
-document.getElementById("merchantName").textContent = CONFIG.MERCHANT;
+OOû¬à€€ú››\èYÿ›[Y[ùôÿ›[Y[ù[[Y[ùôŸ]]öXù]Jô]K][YHäN¬à€€ú›ﬁ\—\öœ[X]⁄YYXJäôYô\úÀX€€‹ã\ÿ⁄[YNà\ö HäKõX]⁄\Œ¬à€€ú›ô^H›\à»
+›\èOOHô\ö»è»õY⁄éàô\ö»äHà
+ﬁ\—\öœ»õY⁄éàô\ö»äN¬àÿ›[Y[ùôÿ›[Y[ù[[Y[ùúŸ]]öXù]Jô]K][YHãô^
+N¬àû^€ÿÿ[›‹òYŸKúŸ]][Jú^[‹À][YHãô^
+_Xÿ]⁄
+J^ﬂBàJN¬àû^ÿ€€ú›[ÿÿ[›‹òYŸKôŸ]][Jú^[‹À][YHäN»Yä
+Hÿ›[Y[ùôÿ›[Y[ù[[Y[ùúŸ]]öXù]Jô]K][YHã
+_Xÿ]⁄
+J^ﬂBüJJ
+N¬Çò€€ú›⁄Y€ò[»H»XúŒõô]»Ÿ]
 
-// theme
-(function(){
-  const btn=document.getElementById("themeBtn");
-  btn.addEventListener("click",()=>{
-    const cur=document.documentElement.getAttribute("data-theme");
-    const sysDark=matchMedia("(prefers-color-scheme: dark)").matches;
-    const next = cur ? (cur==="dark"?"light":"dark") : (sysDark?"light":"dark");
-    document.documentElement.setAttribute("data-theme",next);
-    try{localStorage.setItem("payops-theme",next)}catch(e){}
-  });
-  try{const t=localStorage.getItem("payops-theme"); if(t) document.documentElement.setAttribute("data-theme",t)}catch(e){}
-})();
+KX›[€úŒå\⁄‹ŒåY\ê€X⁄‹Œñ◊HN¬ÇãÀ»KKKKKKKKKH[\ú»KKKKKKKKKBõ]ŸYYHåçåLMé¬ôù[ò›[€àò[ô
 
-const signals = { tabs:new Set(), actions:0, asks:0, tierClicks:[] };
+^»ŸYYL»ŸYY\ŸYY
+ÃëêçŒQç_»]SX]ö[][
+ŸYYúŸYYèèåMK_ŸYY
+N»]
+”X]ö[][
+ùèèçÀå_
+Wù»ô]\õà
 
-// ---------- helpers ----------
-let seed = 20260916;
-function rand(){ seed|=0; seed=seed+0x6D2B79F5|0; let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }
-const pick = a => a[Math.floor(rand()*a.length)];
-const inr = n => "‚Çπ" + Math.round(n).toLocaleString("en-IN");
-const esc = s => String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const $ = id => document.getElementById(id);
+ùèèåM
+Oèèå
+KÕéMMçÃéMé»Bò€€ú›X⁄»HHOàV”X]ôõ€‹äò[ô
 
-// ---------- synthetic world ----------
-const customers = [
-  ["Rajesh Kirana Stores","rajeshkirana@ybl","kn"],["Sri Lakshmi Traders","srilakshmi.traders@okaxis","kn"],
-  ["Gupta General Store","guptags@paytm","hi"],["Fresh Mart Indiranagar","freshmart.blr@okicici","en"],
-  ["Annapoorna Provisions","annapoorna@ibl","kn"],["Sharma Super Bazaar","sharmabazaar@ybl","hi"],
-  ["Nandini Mini Mart","nandinimart@okhdfcbank","kn"],["Royal Stores","royalstores@paytm","en"],
-  ["Venkateshwara Agencies","venkyagencies@okaxis","kn"],["Agarwal Traders","agarwaltraders@ibl","hi"],
-  ["Daily Needs Whitefield","dailyneeds.wf@ybl","en"],["Mahalakshmi Stores","mahalakshmi.st@okicici","kn"],
-  ["Kaveri Provision Centre","kaveriprov@ybl","kn"],["Singh Brothers","singhbros@okaxis","hi"]
-].map(([name,vpa,lang],i)=>({id:i,name,vpa,lang}));
-const custByVpa = Object.fromEntries(customers.map(c=>[c.vpa,c]));
+JòKõ[ô›
+WN¬ò€€ú›[úàHàOà∏†ÆHà
+»X]úõ›[ô
+äKù”ÿÿ[T›ö[ô ô[ãRSàäN¬ò€€ú›\ÿ»H»Oà›ö[ô  Kúô\XŸJ÷…èàâ◊KŸÀœOä»âàéàâò[\»ãèéàâõ»ãèàéàâô›»ã	»âŒàâú][›»ãâ»éàâàÃŒN»üVÿ◊JJN¬ò€€ú›	HYOàÿ›[Y[ùôŸ][[Y[ùûRY
+Y
+N¬ÇãÀ»KKKKKKKKKHﬁ[ù]X»€‹õKKKKKKKKKBò€€ú››\›€Y\ú»H¬à»îòZô\⁄⁄\ò[òH›‹ô\»ãúòZô\⁄⁄\ò[òPXõãö€àóK»î‹öHZ‹⁄ZHòY\ú»ãú‹ö[Z‹⁄ZKùòY\ú–⁄ÿ^\»ãö€àóKà»ë›\HŸ[ô\ò[›‹ôHãô›\Y‹–^]HãöHóK»ëúô\⁄X\ù[ô\ò[òYÿ\àãôúô\⁄X\ùòõê⁄⁄X⁄X⁄Hãô[àóKà»ê[õò\€‹õòHõ›ö\⁄[€ú»ãò[õò\€‹õòPXõãö€àóK»î⁄\õXH›\\àò^òX\àãú⁄\õXXò^òX\êXõãöHóKà»ìò[ô[öHZ[öHX\ùãõò[ô[ö[X\ù⁄⁄òÿò[ö»ãö€àóK»îõﬁX[›‹ô\»ãúõﬁX[›‹ô\–^]Hãô[àóKà»ïô[öÿ]\⁄ÿ\òHYŸ[ò⁄Y\»ãùô[öﬁXYŸ[ò⁄Y\–⁄ÿ^\»ãö€àóK»êYÿ\ùÿ[òY\ú»ãòYÿ\ùÿ[òY\ú–XõãöHóKà»ëZ[HôYY»⁄]YöY[ãôZ[[ôYYÀùŸêXõãô[àóK»ìXZ[Z‹⁄ZH›‹ô\»ãõXZ[Z‹⁄ZKú›⁄⁄X⁄X⁄Hãö€àóKà»íÿ]ô\öHõ›ö\⁄[€àŸ[ùôHãöÿ]ô\ö\õ›êXõãö€àóK»î⁄[ô⁄úõ›\ú»ãú⁄[ô⁄úõ‹–⁄ÿ^\»ãöHóBóKõX\
 
-let invSeq = 4401;
-const invoices = [];
-function newInvoice(c, dueOffset){
-  const amt = Math.round((1800 + rand()*42000)/10)*10;
-  const inv = {id:"INV-"+(invSeq++), cust:c.id, amount:amt, balance:amt, due:dueOffset, reminded:false};
-  invoices.push(inv); return inv;
-}
-customers.forEach(c=>{ const n=2+Math.floor(rand()*3); for(let k=0;k<n;k++) newInvoice(c, Math.round(-70 + rand()*84)); });
+€ò[YKúK[ô◊KJOOä⁄YöKò[YKúK[ôﬂJJN¬ò€€ú››\›ûUúHHÿöôX›ôúõ€Q[ùöY\ ›\›€Y\úÀõX\
+œOñÿÀùúK◊JJN¬Çõ][ùîŸ\HHN¬ò€€ú›[ùõ⁄XŸ\»H◊N¬ôù[ò›[€àô]“[ùõ⁄XŸJÀYSŸôúŸ]
+^¬à€€ú›[]HX]úõ›[ô
 
-const channels = ["PhonePe","Google Pay","PhonePe","Paytm","Google Pay","BHIM","Razorpay","Card POS","NEFT"];
-const isGateway = ch => ch==="Razorpay" || ch==="Card POS";
+N
+»ò[ô
 
-const S = {
-  minutes: 9*60, txns: [], exceptions: [], settlements: [], retries: [], refundQueue: [],
-  received:0, matchedCount:0, totalCount:0, bank:412000, speed:1, paused:false, mdr:false, writeoff:0,
-  advances:0, unallocated:0, refundsPaid:0, earlySurplus:0, schemeClaimed:false
-};
+Jçå
+KÃL
+JåL¬à€€ú›[ùàH⁄YàíSïãHä [ùîŸ\J  K›\›òÀöY[[›[ùò[]ò[[òŸNò[]YNôYSŸôúŸ]ô[Z[ôYôò[Ÿ_N¬à[ùõ⁄XŸ\Àú\⁄
+[ùäN»ô]\õà[ùé¬üBò›\›€Y\úÀôõ‹ëXX⁄
+œOû»€€ú›èLä”X]ôõ€‹äò[ô
 
-function openInvoices(custId){ return invoices.filter(i=>i.balance>0 && (custId===undefined || i.cust===custId)).sort((a,b)=>a.due-b.due); }
+Jå N»õ‹ä]œL⁄œé⁄   Hô]“[ùõ⁄XŸJÀX]úõ›[ô
+MÃ
+»ò[ô
 
-// ---------- generator ----------
-function generate(){
-  const open = openInvoices();
-  if(open.length < 12){ const c=pick(customers); newInvoice(c, Math.round(-5+rand()*20)); }
-  const inv = pick(openInvoices());
-  const c = customers[inv.cust];
-  const r = rand();
-  let t = { time:S.minutes, channel:pick(channels), vpa:c.vpa, amount:inv.balance, remark:"", failed:false };
-  if(r<0.50){ if(rand()<0.3) t.remark = inv.id; }
-  else if(r<0.62){ t.amount = Math.max(500, Math.round(inv.balance*(0.3+rand()*0.4)/10)*10); }
-  else if(r<0.70){ t.amount = inv.balance - (1+Math.floor(rand()*9)); }
-  else if(r<0.77){
-    const last = [...S.txns].reverse().find(x=>x.status==="MATCHED" && !x.failed);
-    if(last){ t.vpa=last.vpa; t.amount=last.amount; t.channel=last.channel; }
-  }
-  else if(r<0.85){ t.vpa = "98"+Math.floor(10000000+rand()*89999999)+"@"+pick(["ybl","paytm","okaxis"]); }
-  else if(r<0.93){ t.vpa = "98"+Math.floor(10000000+rand()*89999999)+"@ybl"; t.remark = "payment for "+inv.id; }
-  else { t.failed = true; t.channel = pick(["PhonePe","Google Pay","Paytm"]); }
-  return t;
-}
+Jé
+JN»JN¬Çò€€ú›⁄[õô[»H»î€ôTHãë€€Ÿ€H^Hãî€ôTHãî^]Hãë€€Ÿ€H^HãêíSHãîò^õ‹ú^Hãêÿ\ô‘»ãìëQïóN¬ò€€ú›\—ÿ]]ÿ^HH⁄Oà⁄OOHîò^õ‹ú^Hà⁄OOHêÿ\ô‘»é¬Çò€€ú›»H¬àZ[ù]\ŒàJçåúŒà◊K^Ÿ\[€úŒà◊KŸ][Y[ùŒà◊Kô]öY\Œà◊KôYù[ô]Y]YNà◊KàôXŸZ]ôYåX]⁄Y€›[ùå›[€›[ùåò[öŒçLå‹YYåK]\ŸYôò[ŸKYéôò[ŸK‹ö][ŸôéåàYò[òŸ\Œå[ò[ÿÿ]YåôYù[ô‘ZYåX\õT›\ú\Œåÿ⁄[YP€Z[YYôò[ŸBüN¬Çôù[ò›[€à‹[í[ùõ⁄XŸ\ ›\›Y
+^»ô]\õà[ùõ⁄XŸ\Àôö[\äOOöKòò[[òŸOå	âà
+›\›YOO][ôYö[ôYKò›\›OOX›\›Y
+JKú€‹ù
 
-// ----------- matching engine (deterministic, rule is recorded) -----------
-// All money enters through one door: fees charged, gateway settlements delayed and netted,
-// direct channels credited to bank. No exception path may touch S.bank directly.
-function receiveFunds(t){
-  const fee = feeFor(t.channel, t.amount); t.fee = fee;
-  if(isGateway(t.channel)){ S.settlements.push({txn:t, net:t.amount-fee, due:S.minutes + (90 + Math.floor(rand()*180)), done:false}); }
-  else { S.bank += t.amount - fee; }
-}
-function applyPayment(t, inv, amount){
-  inv.balance = Math.max(0, inv.balance - amount);
-  receiveFunds(t);
-}
-function feeFor(ch, amt){
-  let f = amt*(CONFIG.FEES[ch]||0);
-  if(S.mdr && !isGateway(ch) && ch!=="NEFT" && amt>CONFIG.MDR_SCENARIO.above) f += Math.min(amt*CONFIG.MDR_SCENARIO.rate, CONFIG.MDR_SCENARIO.cap);
-  return f;
-}
-function addException(t, type, detail, actions){
-  const e = {id:"E"+(S.exceptions.length+1), txn:t, type, detail, actions, open:true, at:S.minutes};
-  S.exceptions.push(e); return e;
-}
+KäOOòKôYKXãôYJN»BÇãÀ»KKKKKKKKKHŸ[ô\ò]‹àKKKKKKKKKBôù[ò›[€àŸ[ô\ò]J
+^¬à€€ú›‹[àH‹[í[ùõ⁄XŸ\ 
+N¬àYä‹[ãõ[ô›Lä^»€€ú›œ\X⁄ ›\›€Y\ú N»ô]“[ùõ⁄XŸJÀX]úõ›[ô
+MJ‹ò[ô
 
-function match(t){
-  S.totalCount++;
-  if(t.failed){
-    t.status="FAILED"; t.rule="Payment declined by payer's bank";
-    const c=custByVpa[t.vpa];
-    addException(t,"Failed payment", `${c?c.name:t.vpa} tried to pay ${inr(t.amount)} and it didn't go through.`, [{label:"Send retry link", do:"retry"},{label:"Ignore", do:"dismiss"}]);
-    return;
-  }
-  S.received += t.amount;
+Jåå
+JN»Bà€€ú›[ùàHX⁄ ‹[í[ùõ⁄XŸ\ 
+JN¬à€€ú›»H›\›€Y\ú÷⁄[ùãò›\›N¬à€€ú›àHò[ô
 
-  const dup = S.txns.slice(-10).find(x=>x!=t && !x.failed && x.vpa===t.vpa && x.amount===t.amount && (t.time-x.time)<45 && (x.status==="MATCHED"||x.status==="PARTIAL"));
-  if(dup){
-    t.status="DUPLICATE"; t.rule=`Same payer and amount ${t.time-dup.time} min after an earlier payment`;
-    receiveFunds(t);
-    addException(t,"Possible duplicate", `${custName(t)} paid ${inr(t.amount)} twice within ${t.time-dup.time} minutes.`, [{label:"Mark for refund", do:"refund"},{label:"Keep as advance", do:"dismiss"}]);
-    return;
-  }
+N¬à]H»[YNîÀõZ[ù]\À⁄[õô[úX⁄ ⁄[õô[ KúNòÀùúK[[›[ùö[ùãòò[[òŸKô[X\öŒààãòZ[Yôò[ŸHN¬àYäèçL
+^»Yäò[ô
 
-  const ref = (t.remark.match(/INV-\d+/)||[])[0];
-  if(ref){
-    const inv = invoices.find(i=>i.id===ref && i.balance>0);
-    if(inv){
-      const partial = t.amount < inv.balance;
-      applyPayment(t, inv, t.amount);
-      t.status = partial?"PARTIAL":"MATCHED"; t.inv=inv.id; t.rule="Bill number found in UPI remark";
-      S.matchedCount++; return;
-    }
-  }
+Oå Húô[X\ö»H[ùãöY»Bà[ŸHYäèçåä^»ò[[›[ùHX]õX^
+LX]úõ›[ô
+[ùãòò[[òŸJäå ‹ò[ô
 
-  const c = custByVpa[t.vpa];
-  if(!c){
-    const cands = openInvoices().filter(i=>i.balance===t.amount);
-    t.status="UNIDENTIFIED"; t.rule="Payer UPI ID not linked to any customer";
-    receiveFunds(t);
-    const acts = cands.slice(0,2).map(i=>({label:`Assign to ${customers[i.cust].name} (${i.id})`, do:"assign", inv:i.id}));
-    acts.push({label:"Park as unallocated", do:"dismiss"});
-    addException(t,"Unknown payer", `${inr(t.amount)} from ${t.vpa}. ${cands.length?cands.length+" open bill"+(cands.length>1?"s":"")+" match this amount exactly.":"No open bill matches this amount."}`, acts);
-    return;
-  }
+Jåç
+KÃL
+JåL
+N»Bà[ŸHYäèçÃ
+^»ò[[›[ùH[ùãòò[[òŸHH
+J”X]ôõ€‹äò[ô
 
-  const mine = openInvoices(c.id);
-  const exact = mine.filter(i=>i.balance===t.amount);
-  if(exact.length){
-    applyPayment(t, exact[0], t.amount);
-    t.status="MATCHED"; t.inv=exact[0].id;
-    t.rule = exact.length>1 ? "Payer UPI ID + exact amount (oldest of "+exact.length+" equal bills)" : "Payer UPI ID + exact amount";
-    S.matchedCount++; return;
-  }
-  const near = mine.find(i=>i.balance-t.amount>0 && i.balance-t.amount<=10);
-  if(near){
-    t.status="SHORT"; t.rule=`Short by ‚Çπ${near.balance-t.amount} against ${near.id}`; t.inv=near.id;
-    receiveFunds(t);
-    addException(t,"Short payment", `${c.name} paid ${inr(t.amount)} against ${near.id} for ${inr(near.balance)}.`, [{label:`Approve and write off ‚Çπ${near.balance-t.amount}`, do:"writeoff", inv:near.id},{label:"Keep bill open", do:"dismiss"}]);
-    return;
-  }
-  const oldest = mine[0];
-  if(oldest && t.amount < oldest.balance){
-    applyPayment(t, oldest, t.amount);
-    t.status="PARTIAL"; t.inv=oldest.id; t.rule="Part-payment applied to oldest bill";
-    S.matchedCount++; return;
-  }
-  t.status="UNIDENTIFIED"; t.rule="Known customer, no bill fits this amount";
-  receiveFunds(t);
-  addException(t,"No matching bill", `${c.name} paid ${inr(t.amount)} but has no open bill it fits.`, [{label:"Record as advance", do:"dismiss"}]);
-}
-const custName = t => (custByVpa[t.vpa]||{name:t.vpa}).name;
+JéJJN»Bà[ŸHYäèçÕ ^¬à€€ú›\›HÀããîÀùú◊Kúô]ô\úŸJ
+Kôö[ô
+Oûú›]\œOOHìPU“Qà	âà^ôòZ[Y
+N¬àYä\›
+^»ùúO[\›ùúN»ò[[›[ù[\›ò[[›[ù»ò⁄[õô[[\›ò⁄[õô[»BàBà[ŸHYäèéJ^»ùúHHéNä”X]ôõ€‹äL
+‹ò[ô
 
-function resolve(eid, actIdx){
-  const e = S.exceptions.find(x=>x.id===eid); if(!e||!e.open) return;
-  const a = e.actions[actIdx]; const t=e.txn;
-  signals.actions++;
-  if(a.do==="assign"){ const inv=invoices.find(i=>i.id===a.inv); if(inv&&inv.balance>=t.amount){ inv.balance-=t.amount; t.inv=inv.id; t.status="MATCHED"; t.rule="Assigned by you"; S.matchedCount++; } }
-  if(a.do==="writeoff"){ const inv=invoices.find(i=>i.id===a.inv); if(inv){ S.writeoff += inv.balance-t.amount; inv.balance=0; t.status="MATCHED"; t.rule="Approved with write-off"; S.matchedCount++; } }
-  if(a.do==="refund"){ t.status="REFUND"; t.rule="Marked for refund"; S.refundQueue.push({amount:t.amount, due:S.minutes + 20 + Math.floor(rand()*40)}); }
-  if(a.do==="dismiss"){
-    if(e.type==="Possible duplicate" || e.type==="No matching bill") S.advances += t.amount;
-    if(e.type==="Unknown payer") S.unallocated += t.amount;
-  }
-  if(a.do==="retry"){ t.rule="Retry link sent"; if(rand()<0.7) S.retries.push({at:S.minutes+20+Math.floor(rand()*40), vpa:t.vpa, amount:t.amount, channel:t.channel}); }
-  e.open=false; e.outcome=a.label;
-  render();
-}
+JéNNNNNNJJ»êä‹X⁄ »ûXõãú^]Hãõ⁄ÿ^\»óJN»Bà[ŸHYäèéL ^»ùúHHéNä”X]ôõ€‹äL
+‹ò[ô
+
+JéNNNNNNJJ»êXõé»úô[X\ö»Hú^[Y[ùõ‹àä⁄[ùãöY»Bà[ŸH»ôòZ[YHùYN»ò⁄[õô[HX⁄ »î€ôTHãë€€Ÿ€H^Hãî^]HóJN»Bàô]\õà¬üBÇãÀ»KKKKKKKKKKKHX]⁄[ô»[ô⁄[ôH
+]\õZ[ö\›XÀù[H\»ôX€‹ôY
+HKKKKKKKKKKBãÀ»[[€ô^H[ù\ú»õ›Y⁄€ôH€‹éàôY\»⁄\ôŸYÿ]]ÿ^HŸ][Y[ù»[^YY[ôô]YãÀ»\ôX›⁄[õô[»‹ôY]Y»ò[öÀàõ»^Ÿ\[€à]X^H›X⁄Àòò[ö»\ôX›KÇôù[ò›[€àôXŸZ]ôQù[ô 
+^¬à€€ú›ôYHHôYQõ‹äò⁄[õô[ò[[›[ù
+N»ôôYHHôYN¬àYä\—ÿ]]ÿ^Jò⁄[õô[
+J^»ÀúŸ][Y[ùÀú\⁄
+›éùô]ùò[[›[ùYôYKYNîÀõZ[ù]\»
+»
+L
+»X]ôõ€‹äò[ô
+
+JåN
+JK€ôNôò[Ÿ_JN»Bà[ŸH»Àòò[ö»
+œHò[[›[ùHôYN»BüBôù[ò›[€à\T^[Y[ù
+[ùã[[›[ù
+^¬à[ùãòò[[òŸHHX]õX^
+[ùãòò[[òŸHH[[›[ù
+N¬àôXŸZ]ôQù[ô 
+N¬üBôù[ò›[€àôYQõ‹ä⁄[]
+^¬à]àH[]
+ä””ëíQÀëëQT÷ÿ⁄_
+N¬àYäÀõYà	âàZ\—ÿ]]ÿ^J⁄
+H	âà⁄OOHìëQïà	âà[]ê””ëíQÀìQó‘–—SêTíSÀòXõ›ôJHà
+œHX]õZ[ä[]
+ê””ëíQÀìQó‘–—SêTíSÀúò]K””ëíQÀìQó‘–—SêTíSÀòÿ\
+N¬àô]\õàé¬üBôù[ò›[€àY^Ÿ\[€ä\K]Z[X›[€ú ^¬à€€ú›HH⁄YàëHä Àô^Ÿ\[€úÀõ[ô›
+ÃJKéù\K]Z[X›[€úÀ‹[éùùYK]îÀõZ[ù]\ﬂN¬àÀô^Ÿ\[€úÀú\⁄
+JN»ô]\õàN¬üBÇôù[ò›[€àX]⁄
+
+^¬àÀù›[€›[ù
+ Œ¬àYäôòZ[Y
+^¬àú›]\œHëêRSQé»úù[OHî^[Y[ùX€[ôYûH^Y\â‹»ò[ö»é¬à€€ú›œX›\›ûUúV›ùúWN¬àY^Ÿ\[€äëòZ[Y^[Y[ùã	ÿœÿÀõò[YNùùú_HöYY»^H	⁄[úäò[[›[ù
+_H[ô]Yâ›€»õ›Y⁄òﬁ€Xô[àîŸ[ôô]ûH[ö»ãŒàúô]ûHüK€Xô[àíY€õ‹ôHãŒàô\€Z\‹»üWJN¬àô]\õé¬àBàÀúôXŸZ]ôY
+œHò[[›[ù¬Çà€€ú›\HÀùúÀú€XŸJLL
+Kôö[ô
+OûO]	âà^ôòZ[Y	âàùúOOO]ùúH	âàò[[›[ùOO]ò[[›[ù	âà
+ù[YK^ù[YJOH	âà
+ú›]\œOOHìPU“Qüú›]\œOOHîTïPSäJN¬àYä\
+^¬àú›]\œHëTP–UHé»úù[OXÿ[YH^Y\à[ô[[›[ù	›ù[YKY\ù[Y_HZ[àYù\à[àX\õY\à^[Y[ù¬àôXŸZ]ôQù[ô 
+N¬àY^Ÿ\[€äî‹‹⁄XõH\Xÿ]Hã	ÿ›\›ò[YJ
+_HZY	⁄[úäò[[›[ù
+_H⁄XŸH⁄][à	›ù[YKY\ù[Y_HZ[ù]\Àòﬁ€Xô[àìX\ö»õ‹àôYù[ôãŒàúôYù[ôüK€Xô[àíŸY\\»Yò[òŸHãŒàô\€Z\‹»üWJN¬àô]\õé¬àBÇà€€ú›ôYàH
+úô[X\öÀõX]⁄
+“SïãW
+À _◊JVÃN¬àYäôYä^¬à€€ú›[ùàH[ùõ⁄XŸ\Àôö[ô
+OOöKöYOO\ôYà	âàKòò[[òŸOå
+N¬àYä[ùä^¬à€€ú›\ùX[Hò[[›[ù[ùãòò[[òŸN¬à\T^[Y[ù
+[ùãò[[›[ù
+N¬àú›]\»H\ùX[»îTïPSéàìPU“Qé»ö[ùèZ[ùãöY»úù[OHêö[ù[Xô\àõ›[ô[àTHô[X\ö»é¬àÀõX]⁄Y€›[ù
+ Œ»ô]\õé¬àBàBÇà€€ú›»H›\›ûUúV›ùúWN¬àYäX ^¬à€€ú›ÿ[ô»H‹[í[ùõ⁄XŸ\ 
+Kôö[\äOOöKòò[[òŸOOO]ò[[›[ù
+N¬àú›]\œHïSíQSïQíQQé»úù[OHî^Y\àTHQõ›[öŸY»[ûH›\›€Y\àé¬àôXŸZ]ôQù[ô 
+N¬à€€ú›X›»Hÿ[ôÀú€XŸJäKõX\
+OOä€Xô[ò\‹⁄Y€à»	ÿ›\›€Y\ú÷⁄Kò›\›Kõò[Y_H
+	⁄KöYJXŒàò\‹⁄Y€àã[ùéöKöYJJN¬àX›Àú\⁄
+€Xô[àî\ö»\»[ò[ÿÿ]YãŒàô\€Z\‹»üJN¬àY^Ÿ\[€äï[ö€õ›€à^Y\àã	⁄[úäò[[›[ù
+_Húõ€H	›ùú_Kà	ÿÿ[ôÀõ[ô›ÿÿ[ôÀõ[ô›
+»à‹[àö[ä ÿ[ôÀõ[ô›åO»ú»éààäJ»àX]⁄\»[[›[ù^X›Kàéàìõ»‹[àö[X]⁄\»\»[[›[ùàüXX› N¬àô]\õé¬àBÇà€€ú›Z[ôHH‹[í[ùõ⁄XŸ\ ÀöY
+N¬à€€ú›^X›HZ[ôKôö[\äOOöKòò[[òŸOOO]ò[[›[ù
+N¬àYä^X›õ[ô›
+^¬à\T^[Y[ù
+^X›ÃKò[[›[ù
+N¬àú›]\œHìPU“Qé»ö[ùèY^X›ÃKöY¬àúù[HH^X›õ[ô›åH»î^Y\àTHQ
+»^X›[[›[ù
+€\›ŸàäŸ^X›õ[ô›
+»à\]X[ö[ Hààî^Y\àTHQ
+»^X›[[›[ùé¬àÀõX]⁄Y€›[ù
+ Œ»ô]\õé¬àBà€€ú›ôX\àHZ[ôKôö[ô
+OOöKòò[[òŸK]ò[[›[ùå	âàKòò[[òŸK]ò[[›[ùLL
+N¬àYäôX\ä^¬àú›]\œHî“‘ïé»úù[OX⁄‹ùûH8†ÆI€ôX\ãòò[[òŸK]ò[[›[ùHYÿZ[ú›	€ôX\ãöYX»ö[ùè[ôX\ãöY¬àôXŸZ]ôQù[ô 
+N¬àY^Ÿ\[€äî⁄‹ù^[Y[ùã	ÿÀõò[Y_HZY	⁄[úäò[[›[ù
+_HYÿZ[ú›	€ôX\ãöYHõ‹à	⁄[úäôX\ãòò[[òŸJ_Kòﬁ€Xô[ò\õ›ôH[ô‹ö]HŸôà8†ÆI€ôX\ãòò[[òŸK]ò[[›[ùXŒàù‹ö][Ÿôàã[ùéõôX\ãöYK€Xô[àíŸY\ö[‹[àãŒàô\€Z\‹»üWJN¬àô]\õé¬àBà€€ú›€\›HZ[ôVÃN¬àYä€\›	âàò[[›[ù€\›òò[[òŸJ^¿¢«ïñ÷VÁBáB¬ˆ∆FW7B¬BÊ÷˜VÁBì∞¢BÁ7FGW3“%%Dî¬#≤BÊñÁc÷ˆ∆FW7BÊñC≤BÁ'V∆S“%'B◊ñ÷VÁB∆ñVBFÚˆ∆FW7B&ñ∆¬#∞¢2Ê÷F6ÜVD6˜VÁB≤≥≤&WGW&„∞¢–¢BÁ7FGW3“%T‰îDTÂDîdîTB#≤BÁ'V∆S“$∂Ê˜v‚7W7Fˆ÷W"¬ÊÚ&ñ∆¬fóG2FÜó2÷˜VÁB#∞¢&V6VófTgVÊG2áBì∞¢FDWÜ6WFñˆ‚áB¬$ÊÚ÷F6ÜñÊr&ñ∆¬"¬G∂2ÊÊ÷W“ñBG∂ñÁ"áBÊ÷˜VÁBó“'WBÜ2ÊÚ˜V‚&ñ∆¬óBfóG2Ê¬∑∂∆&V√¢%&V6˜&B2GfÊ6R"¬FÛ¢&Fó6÷ó72'’“ì∞ß–¶6ˆÁ7B7W7DÊ÷R“B”‚Ü7W7D'ïg∑BÁg◊««∂Ê÷SßBÁg“íÊÊ÷S∞†¶gVÊ7Fñˆ‚&W6ˆ«fRÜVñB¬7DñGÇó∞¢6ˆÁ7BR“2ÊWÜ6WFñˆÁ2ÊfñÊBáÉ”ÁÇÊñC””÷VñBì≤ñbÇW«¬RÊ˜V‚í&WGW&„∞¢6ˆÁ7B“RÊ7FñˆÁ5∂7DñGÖ”≤6ˆÁ7BC÷RÁGÜ„∞¢6ñvÊ«2Ê7FñˆÁ2≤≥∞¢ñbÜÊFÛ””“&76ñv‚"ó≤6ˆÁ7BñÁc÷ñÁfˆñ6W2ÊfñÊBÜì”ÊíÊñC””÷ÊñÁbì≤ñbÜñÁbbfñÁbÊ&∆Ê6S„◊BÊ÷˜VÁBó≤ñÁbÊ&∆Ê6R”◊BÊ÷˜VÁC≤BÊñÁc÷ñÁbÊñC≤BÁ7FGW3“$‘D4ÑTB#≤BÁ'V∆S“$76ñvÊVB'íñ˜R#≤2Ê÷F6ÜVD6˜VÁB≤≥≤“–¢ñbÜÊFÛ””“'w&óFVˆfb"ó≤6ˆÁ7BñÁc÷ñÁfˆñ6W2ÊfñÊBÜì”ÊíÊñC””÷ÊñÁbì≤ñbÜñÁbó≤2Áw&óFVˆfb≥“ñÁbÊ&∆Ê6R◊BÊ÷˜VÁC≤ñÁbÊ&∆Ê6S”≤BÁ7FGW3“$‘D4ÑTB#≤BÁ'V∆S“$&˜fVBvóFÇw&óFR÷ˆfb#≤2Ê÷F6ÜVD6˜VÁB≤≥≤“–¢ñbÜÊFÛ””“'&VgVÊB"ó≤BÁ7FGW3“%$TeT‰B#≤BÁ'V∆S“$÷&∂VBf˜"&VgVÊB#≤2Á&VgVÊEVWVRÁW6Çá∂÷˜VÁCßBÊ÷˜VÁB¬GVS•2Ê÷ñÁWFW2≤#≤÷FÇÊf∆ˆ˜"á&ÊBÇí£Có“ì≤–¢ñbÜÊFÛ””“&Fó6÷ó72"ó∞¢ñbÜRÁGóS””“%˜76ñ&∆RGW∆ñ6FR"«¬RÁGóS””“$ÊÚ÷F6ÜñÊr&ñ∆¬"í2ÊGfÊ6W2≥“BÊ÷˜VÁC∞¢ñbÜRÁGóS””“%VÊ∂Ê˜v‚ñW""í2ÁVÊ∆∆ˆ6FVB≥“BÊ÷˜VÁC∞¢–¢ñbÜÊFÛ””“'&WG'í"ó≤BÁ'V∆S“%&WG'í∆ñÊ≤6VÁB#≤ñbá&ÊBÇì√„rí2Á&WG&ñW2ÁW6Çá∂C•2Ê÷ñÁWFW2≥#¥÷FÇÊf∆ˆ˜"á&ÊBÇí£Cí¬gßBÁg¬÷˜VÁCßBÊ÷˜VÁB¬6ÜÊÊV√ßBÊ6ÜÊÊV«“ì≤–¢RÊ˜V„÷f«6S≤RÊ˜WF6ˆ÷S÷Ê∆&V√∞¢&VÊFW"Çì∞ß–†
