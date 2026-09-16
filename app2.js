@@ -86,7 +86,7 @@ function renderCollections(){
 function reminderText(m){
   const inv = m.invs.sort((a,b)=>a.due-b.due)[0];
   const link = `upi://pay?pa=${CONFIG.MERCHANT_VPA}&pn=${encodeURIComponent(CONFIG.MERCHANT)}&am=${m.total}&cu=INR&tn=${inv.id}`;
-  const amt = inr�m.total), days = -inv.due, n=m.invs.length;
+  const amt = inr(m.total), days = -inv.due, n=m.invs.length;
   const t = {
     en:`Hi ${m.c.name}, this is ${CONFIG.MERCHANT}. ${n} bill${n>1?"s":""} totalling ${amt} ${n>1?"are":"is"} pending, the oldest (${inv.id}) by ${days} days. Pay by UPI here:`,
     hi:`नमस्ते ${m.c.name} जी, ${CONFIG.MERCHANT} की ओर से। आपके ${n} बिल, कुल ${amt}, बकाया हैं। सबसे पुराना बिल (${inv.id}) ${days} दिन से बाकी है। UPI से भुगतान करें:`,
