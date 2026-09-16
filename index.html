@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VyapaarAI PayOps — UPI reconciliation and collections for distributors</title>
+<meta name="description" content="Match every UPI, card and bank payment to an invoice automatically, chase overdue customers on WhatsApp, and ask your numbers in plain language.">
+<meta property="og:title" content="VyapaarAI PayOps">
+<meta property="og:description" content="Every rupee in, matched to an invoice. Try the live demo.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>₹</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,400..800&family=Hind:wght@400;500;600&family=Noto+Sans+Kannada:wght@400;600&display=swap" rel="stylesheet">
+<!-- Optional analytics: paste a GoatCounter / Cloudflare Web Analytics snippet here -->
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#"><i>₹</i><span id="brandName">VyapaarAI PayOps</span></a>
+    <nav class="links">
+      <a href="#demo">Live demo</a>
+      <a href="#import">Import your data</a>
+      <a href="#pricing">Pricing</a>
+      <button class="btn small ghost" id="themeBtn" type="button" aria-label="Switch colour theme">Theme</button>
+      <a class="btn small" href="#access">Get early access</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <h1>Every rupee in, matched to an invoice. Every rupee late, chased for you.</h1>
+      <p class="lede">For distributors and wholesalers who collect over PhonePe, Google Pay, Paytm, cards and NEFT. PayOps reads every payment, ties it to the right bill, flags what doesn't fit, and reminds customers on WhatsApp in their language.</p>
+      <div class="ctas">
+        <a class="btn" href="#demo">Watch it reconcile</a>
+        <a class="btn ghost" href="#access">Get early access</a>
+      </div>
+      <p class="proto-note">Early prototype. The demo runs on made-up data in your browser.</p>
+    </div>
+    <div class="phone" aria-label="Example WhatsApp conversation">
+      <div class="bar"><div class="avatar">₹</div><div><b>PayOps</b><br><span>WhatsApp</span></div></div>
+      <div class="bubble me">Aaj kitna business hua?</div>
+      <div class="bubble bot">₹1,84,650 came in across 137 payments.
+        <ul><li>₹12,400 isn't matched to a bill yet</li><li>2 Razorpay settlements (₹8,750) haven't hit HDFC</li><li>One ₹7,500 payment looks duplicated</li></ul></div>
+      <div class="bubble me">Who hasn't paid me?</div>
+      <div class="bubble bot">17 bills outstanding, ₹72,400 total. Five are over 30 days. Send reminders?</div>
+    </div>
+  </div>
+</section>
+
+<section class="block" style="padding-top:36px">
+  <div class="wrap">
+    <div class="pains">
+      <div><h3>"Which bill was this ₹4,960 for?"</h3><p>UPI remarks are blank, retailers pay from a relative's number, and partial payments pile up against old bills.</p></div>
+      <div><h3>"Razorpay says settled. Bank says no."</h3><p>Gateway settlements arrive a day later, net of fees, in batches that don't line up with any one bill.</p></div>
+      <div><h3>"I don't want to call him again."</h3><p>Chasing dues is awkward, manual, and the first thing that slips when the shop is busy.</p></div>
+    </div>
+    <p class="mdr-banner" style="margin-top:26px"><b>From 15 October 2026, UPI merchant payments above ₹2,000 carry a 0.4% fee</b>, capped at ₹300 for payments of ₹75,000 and above. P2P transfers and payments under ₹2,000 stay free, and the charge cannot be passed on to customers. Open the <a href="#demo">Fees tab</a> to see exactly what this will cost a business like yours.</p>
+  </div>
+</section>
+
+<section class="block" id="demo" style="padding-top:24px">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>A day of collections at a Bengaluru FMCG distributor</h2>
+      <p>Payments arrive every few seconds. The matching rules are visible on each row so you can judge them. Clear exceptions, draft reminders, or ask a question.</p>
+    </div>
+
+    <div class="console">
+      <div class="c-top">
+        <div class="who">
+          <div class="avatar" aria-hidden="true">SB</div>
+          <div><b id="merchantName">Shree Balaji Distributors</b><div class="sub">Simulated clock <span class="num" id="clock">09:00</span></div></div>
+        </div>
+        <div class="c-controls">
+          <span class="live" id="liveDot">Live</span>
+          <button class="btn small ghost" id="pauseBtn" type="button">Pause</button>
+          <button class="btn small ghost" id="speedBtn" type="button">Speed 1×</button>
+          <label class="toggle" title="Confirmed 15 Oct 2026: 0.4% MDR on P2M UPI payments above ₹2,000, capped at ₹300 for ₹75,000+. P2P and payments under ₹2,000 stay free."><input type="checkbox" id="mdrToggle"> UPI MDR from 15 Oct</label>
+        </div>
+      </div>
+
+      <div class="kpis">
+        <div><small>Received today</small><span class="num" id="kReceived">₹0</span></div>
+        <div><small>Auto-matched</small><span class="num" id="kMatched">0%</span></div>
+        <div><small>Open exceptions</small><span class="num" id="kExc">0</span></div>
+        <div><small>Overdue receivables</small><span class="num" id="kOverdue">₹0</span></div>
+        <div><small>Awaiting settlement</small><span class="num" id="kPending">₹0</span></div>
+      </div>
+
+      <div class="profit" id="profitStrip" title="Value PayOps has created or protected for this business today, computed from the live demo ledger"></div>
+
+      <div class="tabs" role="tablist">
+        <button role="tab" aria-selected="true" data-tab="feed">Payments</button>
+        <button role="tab" aria-selected="false" data-tab="exc">Exceptions<span class="count" id="excCount">0</span></button>
+        <button role="tab" aria-selected="false" data-tab="coll">Collections</button>
+        <button role="tab" aria-selected="false" data-tab="opps">Opportunities<span class="count good" id="oppCount">0</span></button>
+        <button role="tab" aria-selected="false" data-tab="fees">Fees</button>
+        <button role="tab" aria-selected="false" data-tab="ask">Ask PayOps</button>
+      </div>
+
+      <div class="pane" id="pane-feed">
+        <div class="scroll"><table>
+          <thead><tr><th>Time</th><th>From</th><th>Channel</th><th class="r">Amount</th><th>Matched to</th><th>Result</th></tr></thead>
+          <tbody id="feedBody"></tbody>
+        </table></div>
+      </div>
+
+      <div class="pane" id="pane-exc" hidden><div id="excList"></div></div>
+
+      <div class="pane" id="pane-coll" hidden>
+        <div class="aging" id="aging"></div>
+        <div id="smartInvoice"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+          <p class="sub">Customers with bills past due date. Reminders go out in each customer's preferred language with a UPI pay link.</p>
+          <button class="btn small" id="draftAllBtn" type="button">Draft all reminders</button>
+        </div>
+        <div class="scroll"><table>
+          <thead><tr><th>Customer</th><th class="r">Bills</th><th class="r">Overdue</th><th class="r">Oldest</th><th>Language</th><th></th></tr></thead>
+          <tbody id="collBody"></tbody>
+        </table></div>
+        <div class="drafts" id="drafts"></div>
+      </div>
+
+      <div class="pane" id="pane-opps" hidden>
+        <div id="oppList"></div>
+        <p class="sub" style="margin-top:12px">Values are computed live from the demo ledger (early-pay surplus at an 18% p.a. cost of funds, failed-payment recovery, duplicate protection, today's fees). The supplier scheme row is illustrative. In the product, PayOps earns only when value is realised: a flat fee per accepted early-pay offer and a share of recovered scheme money.</p>
+      </div>
+
+      <div class="pane" id="pane-fees" hidden>
+        <div class="scroll"><table>
+          <thead><tr><th>Channel</th><th class="r">Payments</th><th class="r">Volume</th><th class="r">Fees</th><th class="r">Effective rate</th></tr></thead>
+          <tbody id="feesBody"></tbody>
+        </table></div>
+        <p class="fees-note">Gateway/POS rates are illustrative placeholders, not quoted provider pricing. The UPI MDR toggle applies the confirmed NPCI framework effective 15 October 2026: 0.4% on person-to-merchant UPI payments above ₹2,000, capped at ₹300 for payments of ₹75,000 and above. P2P transfers and payments under ₹2,000 stay free, and the charge cannot be passed on to customers.</p>
+      </div>
+
+      <div class="pane" id="pane-ask" hidden>
+        <div class="chat">
+          <div class="log" id="chatLog"></div>
+          <div class="chips" id="chips"></div>
+          <form class="ask" id="askForm"><input id="askInput" placeholder="Ask about today's payments, dues, fees or cash" aria-label="Question"><button class="btn" type="submit">Ask</button></form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="import">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Now try it on your own numbers</h2>
+      <p>Upload one month's bank statement and your bill list. Reconciliation runs entirely in your browser — your data never leaves your device. CSV works best; XLSX is read with the SheetJS library when it loads. Or press "Use sample" on both cards to see real matching on realistic data.</p>
+    </div>
+    <div class="imp-grid">
+      <div class="imp-card">
+        <h3>1 · Bank statement</h3>
+        <p class="sub">Credits you received. HDFC / SBI / ICICI-style exports with date, narration and deposit columns all work.</p>
+        <div class="imp-btns">
+          <label class="btn small">Choose file<input type="file" id="bankFile" accept=".csv,.xlsx,.xls,.txt"></label>
+          <button class="btn small ghost" id="bankSample" type="button">Use sample</button>
+        </div>
+        <div class="sub" id="bankInfo">No file loaded.</div>
+        <div class="map" id="bankMap"></div>
+      </div>
+      <div class="imp-card">
+        <h3>2 · Bills / invoices</h3>
+        <p class="sub">A simple list: customer, invoice number, amount, bill date, due date. From Tally, Zoho or Excel — Save As CSV.</p>
+        <div class="imp-btns">
+          <label class="btn small">Choose file<input type="file" id="invFile" accept=".csv,.xlsx,.xls,.txt"></label>
+          <button class="btn small ghost" id="invSample" type="button">Use sample</button>
+        </div>
+        <div class="sub" id="invInfo">No file loaded.</div>
+        <div class="map" id="invMap"></div>
+      </div>
+    </div>
+    <div id="impRunWrap" hidden>
+      <button class="btn" id="impRun" type="button">Run reconciliation</button>
+      <span class="sub" id="impRunNote"></span>
+    </div>
+    <div id="impResults"></div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <div class="sec-head"><h2>How it works</h2></div>
+    <div class="steps">
+      <div><h3>Connect what you already use</h3><p>Your bank statement, payment app and gateway reports, and bills from Tally, Zoho or Excel. No new QR code, no change for your customers.</p></div>
+      <div><h3>Every payment is matched</h3><p>Rules you can read: payer UPI ID, exact amount, bill number in the remark, oldest bill first for part-payments. Anything unclear becomes an exception, never a guess.</p></div>
+      <div><h3>Act from WhatsApp</h3><p>Approve matches, send reminders with a pay link, and ask what came in, who owes you, and what fees cost this month.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="pricing">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>What would this be worth to you?</h2>
+      <p>Launch pricing for early members — pay your first month below, or tell us what you'd pay and lock the rate in.</p>
+    </div>
+    <div class="prices">
+      <div class="price">
+        <h3>Reconcile</h3>
+        <div class="num">₹999<small>/month</small></div>
+        <ul><li>One bank account, up to 3 payment apps</li><li>Automatic matching to bills</li><li>Daily WhatsApp summary</li></ul>
+        <button class="btn ghost" data-pay="reconcile" type="button">Pay ₹999 via UPI</button>
+        <button class="btn ghost small" data-tier="Reconcile ₹999" type="button" style="margin-top:8px">Not sure — I'd pay for this</button>
+      </div>
+      <div class="price pick">
+        <h3>Reconcile and collect</h3>
+        <div class="num">₹2,499<small>/month</small></div>
+        <ul><li>Everything in Reconcile</li><li>Reminders in Kannada, Hindi, Tamil, English</li><li>Settlement and fee tracking</li><li>Ask PayOps on WhatsApp</li></ul>
+        <button class="btn" data-pay="reconcollect" type="button">Pay ₹2,499 via UPI</button>
+        <button class="btn ghost small" data-tier="Reconcile+Collect ₹2,499" type="button" style="margin-top:8px">Not sure — I'd pay for this</button>
+      </div>
+      <div class="price">
+        <h3>Multi-branch</h3>
+        <div class="num">Talk to us</div>
+        <ul><li>Multiple branches and bank accounts</li><li>Staff roles and approvals</li><li>Tally or Zoho sync</li></ul>
+        <button class="btn ghost" data-tier="Multi-branch" type="button">Talk to us</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="access">
+  <div class="wrap access">
+    <div>
+      <h2>Get early access</h2>
+      <p style="margin-top:12px;color:var(--muted)">We're onboarding a small group of distributors and wholesalers in Bengaluru first. Leave your details and we'll reach out on WhatsApp within two working days.</p>
+      <p style="margin-top:12px;color:var(--muted)">Nothing to install, and we never move money. PayOps only reads your payment and bill records.</p>
+    </div>
+    <form class="wl" id="wlForm" novalidate>
+      <label>Your name<input name="name" required autocomplete="name"></label>
+      <label>WhatsApp number<input name="whatsapp" required inputmode="tel" autocomplete="tel"></label>
+      <label>Business name<input name="business" autocomplete="organization"></label>
+      <label>City<input name="city" value=""></label>
+      <label>Type of business
+        <select name="type"><option>Distributor / wholesaler</option><option>Retail shop</option><option>Clinic / diagnostics</option><option>Restaurant</option><option>School / coaching</option><option>Online brand (D2C)</option><option>Other</option></select></label>
+      <label>Digital collections per month
+        <select name="volume"><option>Under ₹5 lakh</option><option>₹5–25 lakh</option><option>₹25 lakh–1 crore</option><option>Over ₹1 crore</option></select></label>
+      <label class="full">Biggest headache
+        <select name="pain"><option>Matching payments to bills</option><option>Chasing customers who owe money</option><option>Tracking gateway settlements</option><option>Knowing what payment fees cost me</option><option>Something else</option></select></label>
+      <label class="full">Plan you'd pay for
+        <select name="tier" id="tierSelect"><option value="">Not sure yet</option><option>Reconcile ₹999</option><option>Reconcile+Collect ₹2,499</option><option>Multi-branch</option></select></label>
+      <label class="full">Anything else? (optional)<textarea name="notes" rows="3"></textarea></label>
+      <input type="text" name="company_url" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
+      <div class="full"><button class="btn" type="submit" id="wlSubmit">Request early access</button></div>
+      <p class="formmsg" id="formMsg" role="status"></p>
+    </form>
+  </div>
+</section>
+
+<section class="pm-overlay" id="payModal" hidden>
+  <div class="pm-card" role="dialog" aria-modal="true" aria-labelledby="pmTitle">
+    <button class="pm-close" id="pmClose" type="button" aria-label="Close">×</button>
+    <h3 id="pmTitle">Pay by UPI</h3>
+    <div class="pm-grid">
+      <img id="pmQR" alt="UPI QR code for this plan" width="220" height="220">
+      <div>
+        <p><b id="pmPlan"></b></p>
+        <p class="sub">Pay <b class="num" id="pmAmount"></b> to UPI ID <b id="pmUpiId"></b>. Scan the QR with any UPI app — PhonePe, Google Pay, Paytm, BHIM — or tap the button below on your phone.</p>
+        <a class="btn" id="pmLink" href="#">Open in UPI app</a>
+        <p class="sub">After paying, WhatsApp the screenshot or UTR reference to <b id="pmContact">the number we reply from</b>, and your first month starts once we confirm receipt.</p>
+        <p class="sub">Early-member launch pricing. No auto-renewal yet — we'll remind you before each month, and you can stop any time.</p>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>VyapaarAI PayOps is an early-stage prototype. Demo data is synthetic.</span>
+    <span>Not affiliated with NPCI or any bank, payment app or gateway named on this page.</span>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+<script src="import.js"></script>
+</body>
+</html>
