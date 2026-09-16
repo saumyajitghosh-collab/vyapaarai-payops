@@ -213,7 +213,7 @@ function resolve(eid, actIdx){
     if(e.type==="Possible duplicate" || e.type==="No matching bill") S.advances += t.amount;
     if(e.type==="Unknown payer") S.unallocated += t.amount;
   }
-  if(a.do==="retry"){ t.rule="Retry link sent"; if(rand()<0.7) S.retries.push({at:S.minutes+20+Math.floor(rand()*40), vpa:t.vpa, amount:t.amount, channel:t.channel)}); }
+  if(a.do==="retry"){ t.rule="Retry link sent"; if(rand()<0.7) S.retries.push({at:S.minutes+20+Math.floor(rand()*40), vpa:t.vpa, amount:t.amount, channel:t.channel}); }
   e.open=false; e.outcome=a.label;
   render();
 }
