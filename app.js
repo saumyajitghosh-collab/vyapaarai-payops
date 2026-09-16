@@ -20,7 +20,7 @@ const CONFIG = {
     UPI_ID: "9836296103@upi",
     PAYEE_NAME: "VyapaarAI PayOps",
     // Your WhatsApp number for payment confirmations, e.g. "919836296104". Shown in the payment dialog.
-    WHATSAPP: "",
+    WHATSAPP: "919836296103",
     PLANS: {
       reconcile:   { label:"Reconcile", amount:999, note:"PayOps Reconcile 1mo",
                      desc:"One bank account, up to 3 payment apps, automatic matching to bills, daily WhatsApp summary.",
@@ -113,7 +113,7 @@ function generate(){
   return t;
 }
 
-// ---------- matching engine (deterministic, rule is recorded) ----------
+// ----------- matching engine (deterministic, rule is recorded) -----------
 // All money enters through one door: fees charged, gateway settlements delayed and netted,
 // direct channels credited to bank. No exception path may touch S.bank directly.
 function receiveFunds(t){
@@ -145,7 +145,7 @@ function match(t){
   }
   S.received += t.amount;
 
-  const dup = S.txns.slice(-10).find(x=>x!==t && !x.failed && x.vpa===t.vpa && x.amount===t.amount && (t.time-x.time)<=45 && (x.status==="MATCHED"||x.status==="PARTIAL"));
+  const dup = S.txns.slice(-10).find(x=>x!=t && !x.failed && x.vpa===t.vpa && x.amount===t.amount && (t.time-x.time)<45 && (x.status==="MATCHED"||x.status==="PARTIAL"));
   if(dup){
     t.status="DUPLICATE"; t.rule=`Same payer and amount ${t.time-dup.time} min after an earlier payment`;
     receiveFunds(t);
