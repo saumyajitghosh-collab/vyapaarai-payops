@@ -1,6 +1,6 @@
 /* ============ CONFIG: edit these before deploying ============ */
 const CONFIG = {
-  BRAND: "VyapaarAI PayOps",
+  BRAND: "PayOps by VyapaarAI",
   MERCHANT: "Shree Balaji Distributors",
   MERCHANT_VPA: "shreebalaji@demo",
   // Formspree (https://formspree.io) endpoint e.g. "https://formspree.io/f/abcdwxyz". Leave "" to fall back to email.
@@ -64,6 +64,7 @@ const CONFIG = {
 /* ============================================================== */
 
 document.getElementById("brandName").textContent = CONFIG.BRAND;
+document.title = "PayOps by VyapaarAI — UPI reconciliation and collections for distributors";
 document.getElementById("merchantName").textContent = CONFIG.MERCHANT;
 
 // theme

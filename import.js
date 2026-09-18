@@ -1,9 +1,12 @@
 // ============================================================
 // Real-data import: bank statement + bills → reconciliation.
 // Runs 100% in the browser. Nothing is uploaded anywhere.
+// Statements: CSV, XLSX (SheetJS, loaded on demand) and PDF (pdf.js, loaded on demand).
+// Sessions persist locally so a reload never loses your work.
 // ============================================================
 (function(){
 const IMP = { bank:null, inv:null, mapB:null, mapI:null, results:null };
+const STORE = "payops-import-v5";
 
 // ---------- CSV / table parsing ----------
 function parseCSV(text){
@@ -45,6 +48,145 @@ function loadXLSX(){
     s.onload=res; s.onerror=rej; document.head.appendChild(s);
   });
 }
+function loadPDFJS(){
+  if(window.pdfjsLib) return Promise.resolve();
+  return new Promise((res,rej)=>{
+    const s=document.createElement("script");
+    s.src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+    s.onload=()=>{ try{ window.pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"; res(); }catch(e){ rej(e); } };
+    s.onerror=rej; document.head.appendChild(s);
+  });
+}
+
+// ---------- PDF: extract text lines from every page ----------
+function extractPDFLines(buf){
+  return window.pdfjsLib.getDocument({data:buf}).promise.then(doc=>{
+    const all=[];
+    let chain=Promise.resolve();
+    for(let p=1;p<=doc.numPages;p++){
+      chain=chain.then(()=>doc.getPage(p).then(pg=>pg.getTextContent()).then(tc=>{
+        const lines=[];
+        tc.items.forEach(it=>{
+          if(!it.str) return;
+          const y=Math.round(it.transform[5]), x=it.transform[4];
+          let L=lines.find(l=>Math.abs(l.y-y)<=2);
+          if(!L){ L={y,parts:[]}; lines.push(L); }
+          L.parts.push({x,s:it.str});
+        });
+        lines.sort((a,b)=>b.y-a.y);
+        lines.forEach(l=>{
+          l.parts.sort((a,b)=>a.x-b.x);
+          const t=l.parts.map(p=>p.s).join(" ").replace(/\s+/g," ").trim();
+          if(t) all.push(t);
+        });
+      }));
+    }
+    return chain.then(()=>all);
+  });
+}
+
+// ---------- PDF: turn text lines into statement rows ----------
+const PDF_DATE=/^(\d{1,2}[\/\-.]\d{1,2}[\/\-.]\d{2,4}|\d{1,2}-[A-Za-z]{3,}-\d{2,4}|\d{4}-\d{1,2}-\d{1,2})(?=\s|$)/;
+const PDF_NUM=/^(?:(?:₹|Rs\.?|INR)\s*)?(-?\d{1,3}(?:,\d{2,3})*(?:\.\d+)?|-?\d+(?:\.\d+)?)(CR|DR)?\.?$/i;
+const PDF_SKIP=/^(page\s+\d|statement of account|account (no|number|summary)|opening balance|closing balance|balance (b\/f|c\/f)|b\/f|c\/f|total|grand total|period|from date|to date|ifsc|micr|branch|address|nominee|this is a computer|generated|legend|note[s]?[:\s])/i;
+function isNumTok(t){ return t==="-" || PDF_NUM.test(t); }
+function tokVal(t){ return t==="-" ? null : parseFloat(t.replace(PDF_NUM,"$1").replace(/,/g,"")); }
+function tokMark(t){ const m=t.match(/(CR|DR)\.?$/i); return m ? m[1].toLowerCase() : null; }
+function splitTrail(toks){
+  // merge a standalone CR/DR marker into the numeric token to its left, then take the trailing number run
+  const merged=[];
+  for(let i=0;i<toks.length;i++){
+    const t=toks[i];
+    if(/^(CR|DR)\.?$/i.test(t) && merged.length && isNumTok(merged[merged.length-1]) && merged[merged.length-1]!=="-"){
+      merged[merged.length-1]=merged[merged.length-1]+t;
+    } else merged.push(t);
+  }
+  const trail=[];
+  while(merged.length && trail.length<5 && isNumTok(merged[merged.length-1])) trail.unshift(merged.pop());
+  return { narr:merged.join(" ").trim(), trail };
+}
+function classify(vals, lastBal){
+  let bal=null, mvs=[];
+  if(vals.length>=2 && vals[vals.length-1].v!=null){ bal=vals[vals.length-1].v; mvs=vals.slice(0,-1); }
+  else mvs=vals;
+  const diff=(lastBal!=null && bal!=null) ? +(bal-lastBal).toFixed(2) : null;
+  const isM=v=>v!=null && Math.abs(v)>0.009;
+  let credit=null, debit=null, mov=null;
+  if(mvs.length>=2){
+    const a=mvs[0], b=mvs[1];
+    if(isM(a.v) && !isM(b.v)) mov=a;
+    else if(isM(b.v) && !isM(a.v)) mov=b;
+    else if(isM(a.v) && isM(b.v)){
+      if(a.m==="dr" || b.m==="cr"){ debit=a.v; credit=b.v; }
+      else if(a.m==="cr" || b.m==="dr"){ credit=a.v; debit=b.v; }
+      else if(diff!=null && Math.abs(a.v-Math.abs(diff))<0.02){ if(diff>0) credit=a.v; else debit=a.v; }
+      else if(diff!=null && Math.abs(b.v-Math.abs(diff))<0.02){ if(diff>0) credit=b.v; else debit=b.v; }
+      else { debit=a.v; credit=b.v; }
+    }
+  } else if(mvs.length===1 && isM(mvs[0].v)){ mov=mvs[0]; }
+  if(mov){
+    if(mov.m==="dr") debit=mov.v;
+    else if(mov.m==="cr") credit=mov.v;
+    else if(diff!=null && Math.abs(mov.v-Math.abs(diff))<0.02){ if(diff>0) credit=mov.v; else debit=mov.v; }
+    else if(diff!=null && diff<0 && Math.abs(mov.v+diff)<0.02) debit=mov.v;
+    else credit=mov.v;
+  }
+  return { credit, debit, bal };
+}
+function parsePDFLines(lines){
+  const rows=[]; let prev=null, pending=null, lastBal=null, rowno=0;
+  function build(dateStr, narr, trail){
+    const vals=trail.map(t=>{ const v=tokVal(t); return {v:(v==null||isNaN(v))?null:v, m:tokMark(t)}; });
+    const ob=narr.match(/^(opening|closing) balance/i) || narr.match(/^balance (b\/f|c\/f)/i);
+    if(ob && vals.length===1 && vals[0].v!=null){ lastBal=vals[0].v; prev=null; return null; }
+    const c=classify(vals, lastBal);
+    if(c.credit==null && c.debit==null && c.bal==null) return null;
+    let ref="";
+    const rm=narr.match(/\b(?:NEFT|IMPS|UTR|REF)[\/\- ]?\d{4,18}\b/i) || narr.match(/\bCHQ(?:UE)?[\/\- ]?\d{4,18}\b/i) || narr.match(/\b\d{12}\b/);
+    if(rm) ref=rm[0].replace(/[^A-Za-z0-9]/g,"");
+    const row={
+      Date:dateStr,
+      Narration:narr||"(no narration)",
+      Ref:ref,
+      Withdrawal:c.debit==null?"":String(c.debit),
+      Deposit:c.credit==null?"":String(c.credit),
+      Balance:c.bal==null?"":String(c.bal),
+      __row:++rowno
+    };
+    if(c.bal!=null) lastBal=c.bal;
+    return row;
+  }
+  lines.forEach(raw=>{
+    const ln=String(raw||"").replace(/\s+/g," ").trim();
+    if(!ln) return;
+    const dm=ln.match(PDF_DATE);
+    if(!dm){
+      if(PDF_SKIP.test(ln)) return;
+      if(pending){
+        const st=splitTrail(ln.split(/\s+/));
+        if(st.trail.length){
+          const r=build(pending.date, (pending.narr+" "+st.narr).trim(), st.trail);
+          if(r){ rows.push(r); prev=r; }
+          pending=null;
+        } else pending.narr=(pending.narr+" "+st.narr).trim();
+        return;
+      }
+      if(prev) prev.Narration=(prev.Narration+" "+ln).trim();
+      return;
+    }
+    pending=null;
+    const st=splitTrail(ln.slice(dm[0].length).trim().split(/\s+/));
+    if(!st.trail.length){
+      if(!PDF_SKIP.test(ln)) pending={date:dm[1], narr:st.narr};
+      return;
+    }
+    const r=build(dm[1], st.narr, st.trail);
+    if(r){ rows.push(r); prev=r; }
+  });
+  return rows;
+}
+
+// ---------- file reading (CSV text, XLSX array, PDF rows) ----------
 function readFile(file){
   const name=file.name||"";
   if(/\.(xlsx|xls)$/i.test(name)){
@@ -57,6 +199,17 @@ function readFile(file){
       }catch(e){rej(e);} };
       fr.onerror=rej; fr.readAsArrayBuffer(file);
     }));
+  }
+  if(/\.pdf$/i.test(name)){
+    return loadPDFJS().then(()=>new Promise((res,rej)=>{
+      const fr=new FileReader();
+      fr.onload=()=>{ extractPDFLines(fr.result).then(res,rej); };
+      fr.onerror=rej; fr.readAsArrayBuffer(file);
+    })).then(lines=>{
+      const rows=parsePDFLines(lines);
+      if(!rows.length) throw new Error("no transaction rows found in this PDF");
+      return rows;
+    });
   }
   return new Promise((res,rej)=>{
     const fr=new FileReader();
@@ -205,6 +358,46 @@ function runImport(bankRows, invRows, mapB, mapI){
   return res;
 }
 
+// ---------- session persistence (localStorage; still never leaves this device) ----------
+function saveSession(){
+  if(!IMP.results) return;
+  try{ localStorage.setItem(STORE, JSON.stringify({bank:IMP.bank, inv:IMP.inv, mapB:IMP.mapB, mapI:IMP.mapI, results:IMP.results, at:Date.now()})); }catch(e){}
+}
+function clearSession(){ try{ localStorage.removeItem(STORE); }catch(e){} }
+function loadSession(){
+  try{ return JSON.parse(localStorage.getItem(STORE)||"null"); }catch(e){ return null; }
+}
+function resumeSession(){
+  const d=loadSession();
+  if(!d || !d.results) return false;
+  IMP.bank=d.bank; IMP.inv=d.inv; IMP.mapB=d.mapB; IMP.mapI=d.mapI; IMP.results=d.results;
+  renderMap("bank"); renderMap("inv"); refreshRun(); renderResults(d.results);
+  return true;
+}
+function resetAll(){
+  clearSession();
+  IMP.bank=null; IMP.inv=null; IMP.mapB=null; IMP.mapI=null; IMP.results=null;
+  renderMap("bank"); renderMap("inv"); refreshRun();
+  $id("impResults").innerHTML="";
+  try{ location.reload(); }catch(e){}
+}
+function showResumeBanner(){
+  const d=loadSession();
+  if(!d || !d.results) return;
+  const sec=$id("import");
+  if(!sec) return;
+  const b=document.createElement("div");
+  b.className="imp-resume";
+  b.style.cssText="display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;padding:12px 14px;margin:14px 0;border:1px solid #d8d4cc;border-radius:12px;background:rgba(127,127,127,.06)";
+  const when=new Date(d.at).toLocaleString("en-IN");
+  b.innerHTML="<span style='font-size:.92rem'>You have reconciliation results from <b>"+esc(String(when))+"</b> saved on this device.</span>"
+    +"<span style='display:flex;gap:8px'><button class='btn small' id='impResume' type='button'>Resume</button>"
+    +"<button class='btn small ghost' id='impFresh' type='button'>Start fresh</button></span>";
+  sec.insertBefore(b, sec.firstChild);
+  $id("impResume").addEventListener("click",()=>{ b.remove(); resumeSession(); });
+  $id("impFresh").addEventListener("click",()=>{ b.remove(); clearSession(); });
+}
+
 // ---------- sample data ----------
 const SAMPLE_INV=`Customer,Invoice No,Amount,Bill Date,Due Date
 Rajesh Kirana Stores,INV1001,24800,05/08/2026,04/09/2026
@@ -275,7 +468,7 @@ function renderResults(res){
   <div class="imp-hero">
     <h3>₹${fmt(tot)} found needing attention</h3>
     <p class="sub">Overdue bills <b class="num">₹${fmt(a.overdue)}</b> · Unmatched credits <b class="num">₹${fmt(a.unmatched)}</b> · Short-paid <b class="num">₹${fmt(a.short)}</b> · Possible duplicates <b class="num">₹${fmt(a.duplicate)}</b></p>
-    <p class="sub">From ${st.credits} credits and ${st.bills} bills — matched by rules you can audit on every row, computed in your browser. Nothing was uploaded.</p>
+    <p class="sub">From ${st.credits} credits and ${st.bills} bills — matched by rules you can audit on every row, computed in your browser. Nothing was uploaded. Your session is saved on this device for next time.</p>
   </div>
   <div class="imp-quality">
     <div><small>Credits read</small><span class="num">${st.credits}</span></div>
@@ -299,6 +492,7 @@ function renderResults(res){
     ${res.overdue.slice(0,15).map(i=>`<tr><td>${esc(i.no)}</td><td>${esc(i.customer)}</td><td class="r num">₹${fmt(i.balance)}</td><td>${esc(i.due||"—")}</td></tr>`).join("")}
     </tbody></table></div>`:""}
   <p style="margin-top:18px"><button class="btn small ghost" id="impDl" type="button">Download exceptions (CSV)</button>
+  <button class="btn small ghost" id="impReset" type="button">Start over</button>
   <span class="sub" style="margin-left:10px">In the product this feeds the same collections, Smart Terms and Profit Ledger you saw in the live demo — on your real data.</span></p>`;
   $id("impDl").addEventListener("click",()=>{
     const lines=["Type,Amount,Detail,Statement row"];
@@ -309,10 +503,12 @@ function renderResults(res){
     a.href=URL.createObjectURL(blob); a.download="payops-exceptions.csv"; a.click();
     setTimeout(()=>URL.revokeObjectURL(a.href),2000);
   });
+  $id("impReset").addEventListener("click",resetAll);
 }
 function runNow(){
   IMP.results=runImport(IMP.bank.rows, IMP.inv.rows, IMP.mapB, IMP.mapI);
   renderResults(IMP.results);
+  saveSession();
 }
 function handleFile(file, kind){
   if(!file) return;
@@ -322,7 +518,9 @@ function handleFile(file, kind){
     setData(kind, file.name, rows);
   }).catch(err=>{
     const el=$id(kind==="bank"?"bankInfo":"invInfo");
-    el.textContent=/\.(xlsx|xls)$/i.test(file.name||"")
+    el.textContent=/\.pdf$/i.test(file.name||"")
+      ? "PDF reading needs the pdf.js library from the CDN — check your connection, or export the statement as CSV and try again."
+      : /\.(xlsx|xls)$/i.test(file.name||"")
       ? "XLSX needs the SheetJS library from the CDN — check your connection, or export the sheet as CSV and try again."
       : "Couldn't read this file: "+(err&&err.message?err.message:"");
   });
@@ -343,6 +541,8 @@ document.addEventListener("change",e=>{
   info.textContent=missing.length?("Map the required columns marked *."):(IMP[sel.dataset.kind].rows.length+" rows mapped.");
   if(IMP.bank && IMP.inv && !missing.length) runNow();
 });
+// offer to restore the last session on load
+showResumeBanner();
 // expose for automated tests only
-window.__payopsImport={parseCSV, runImport, detect, dparse, parseAmount, SAMPLE_BANK, SAMPLE_INV, BANK_FIELDS, INV_FIELDS, IMP};
+window.__payopsImport={parseCSV, runImport, detect, dparse, parseAmount, parsePDFLines, saveSession, clearSession, loadSession, resumeSession, resetAll, SAMPLE_BANK, SAMPLE_INV, BANK_FIELDS, INV_FIELDS, IMP, STORE};
 })();

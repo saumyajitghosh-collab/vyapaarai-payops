@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>VyapaarAI PayOps — UPI reconciliation and collections for distributors</title>
+<title>PayOps by VyapaarAI — UPI reconciliation and collections for distributors</title>
 <meta name="description" content="Match every UPI, card and bank payment to an invoice automatically, chase overdue customers on WhatsApp, and ask your numbers in plain language.">
-<meta property="og:title" content="VyapaarAI PayOps">
+<meta property="og:title" content="PayOps by VyapaarAI">
 <meta property="og:description" content="Every rupee in, matched to an invoice. Try the live demo.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>₹</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,7 +18,7 @@
 
 <header class="top">
   <div class="wrap">
-    <a class="brand" href="#"><i>₹</i><span id="brandName">VyapaarAI PayOps</span></a>
+    <a class="brand" href="#"><i>₹</i><span id="brandName">PayOps by VyapaarAI</span></a>
     <nav class="links">
       <a href="#demo">Live demo</a>
       <a href="#import">Import your data</a>
@@ -154,14 +154,14 @@
   <div class="wrap">
     <div class="sec-head">
       <h2>Now try it on your own numbers</h2>
-      <p>Upload one month's bank statement and your bill list. Reconciliation runs entirely in your browser — your data never leaves your device. CSV works best; XLSX is read with the SheetJS library when it loads. Or press "Use sample" on both cards to see real matching on realistic data.</p>
+      <p>Upload one month's bank statement and your bill list. Reconciliation runs entirely in your browser — your data never leaves your device. Statements in CSV, XLSX or PDF (the PDF is read with the pdf.js library when it loads); bills as CSV or XLSX. Your results are saved on this device, so you can close the tab and pick up where you left off. Or press "Use sample" on both cards to see real matching on realistic data.</p>
     </div>
     <div class="imp-grid">
       <div class="imp-card">
         <h3>1 · Bank statement</h3>
-        <p class="sub">Credits you received. HDFC / SBI / ICICI-style exports with date, narration and deposit columns all work.</p>
+        <p class="sub">Credits you received. HDFC / SBI / ICICI-style exports with date, narration and deposit columns all work — CSV, XLSX or the bank's own PDF statement.</p>
         <div class="imp-btns">
-          <label class="btn small">Choose file<input type="file" id="bankFile" accept=".csv,.xlsx,.xls,.txt"></label>
+          <label class="btn small">Choose file<input type="file" id="bankFile" accept=".csv,.xlsx,.xls,.pdf,.txt"></label>
           <button class="btn small ghost" id="bankSample" type="button">Use sample</button>
         </div>
         <div class="sub" id="bankInfo">No file loaded.</div>
@@ -171,7 +171,7 @@
         <h3>2 · Bills / invoices</h3>
         <p class="sub">A simple list: customer, invoice number, amount, bill date, due date. From Tally, Zoho or Excel — Save As CSV.</p>
         <div class="imp-btns">
-          <label class="btn small">Choose file<input type="file" id="invFile" accept=".csv,.xlsx,.xls,.txt"></label>
+          <label class="btn small">Choose file<input type="file" id="invFile" accept=".csv,.xlsx,.xls,.pdf,.txt"></label>
           <button class="btn small ghost" id="invSample" type="button">Use sample</button>
         </div>
         <div class="sub" id="invInfo">No file loaded.</div>
